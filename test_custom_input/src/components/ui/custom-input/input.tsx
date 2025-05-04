@@ -12,7 +12,8 @@ export const CustomInput = ({
      errorMessage,
      defaultValue = '',
      onChange,
-     onBlur
+     onBlur,
+     allowNewLine = false
 }: CustomInputProps) => {
      const [isFocused, setIsFocused] = useState(false);
      const [hasContent, setHasContent] = useState(!!defaultValue);
@@ -66,9 +67,15 @@ export const CustomInput = ({
      const handleKeyDown = (e: React.KeyboardEvent) => {
           // Enter key for submit on single line inputs
           if (e.key === 'Enter' && type !== 'multiline') {
-               e.preventDefault();
-               validateInput();
-               // Move to next input or submit form logic would go here
+               if (allowNewLine) {
+                    // Allow new line if allowNewLine is true
+                    document.execCommand('insertLineBreak');
+                    e.preventDefault();
+               } else {
+                    e.preventDefault();
+                    validateInput();
+                    // Move to next input or submit form logic would go here
+               }
           }
      };
 

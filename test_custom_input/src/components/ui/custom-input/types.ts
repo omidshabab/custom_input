@@ -6,6 +6,7 @@ export interface CustomInputProps {
   disabled?: boolean;
   errorMessage?: string;
   defaultValue?: string;
+  allowNewLine?: boolean;
   onChange?: (value: string) => void;
   onBlur?: (value: string) => void;
 }

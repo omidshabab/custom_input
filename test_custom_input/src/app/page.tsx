@@ -31,6 +31,7 @@ export default function Home() {
             id="email-input"
             label="Email"
             type="email"
+            allowNewLine={true}
             errorMessage="Please enter a valid email address"
             onChange={setEmail}
           />
@@ -39,6 +40,7 @@ export default function Home() {
             id="description-input"
             label="Description"
             type="multiline"
+            allowNewLine={true}
             errorMessage="Please provide a description"
             onChange={setDescription}
           />
