@@ -5,8 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Custom Text Input</title>
     <style>
+        /* Font face declarations for Farsi fonts */
+  @font-face {
+    font-family: 'Estedad';
+    src: url('./assets/fonts/fa/Estedad-FD-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Estedad';
+    src: url('./assets/fonts/fa/Estedad-FD-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Estedad';
+    src: url('./assets/fonts/fa/Estedad-FD-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+  }
+  
+  /* Font face declarations for English fonts */
+  @font-face {
+    font-family: 'Manrope';
+    src: url('./assets/fonts/en/Manrope-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Manrope';
+    src: url('./assets/fonts/en/Manrope-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Manrope';
+    src: url('./assets/fonts/en/Manrope-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+  }
+        
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Manrope';
             display: flex;
             justify-content: center;
             align-items: center;
@@ -14,6 +58,23 @@
             background-color: #f5f5f5;
             margin: 0;
             padding: 20px;
+        }
+
+        /* Font classes for different languages */
+        .en {
+            font-family: 'Manrope';
+            letter-spacing: -1px;
+        }
+        
+        .fa {
+            font-family: 'Estedad';
+            direction: rtl;
+            letter-spacing: -1px;
+        }
+        
+        /* For mixed content, we'll handle this in JavaScript */
+        .mixed-content {
+            /* Base styles for mixed content */
         }
 
         .container {
@@ -177,15 +238,6 @@
                 <label class="input-label">Email</label>
                 <div class="error-message">Please enter a valid email address</div>
             </div>
-
-            <!-- Password Input -->
-            <div class="custom-input-container">
-                <div class="custom-input" id="password-input" tabindex="0">
-                    <div class="input-text" contenteditable="true" data-placeholder="Password" data-type="password"></div>
-                </div>
-                <label class="input-label">Password</label>
-                <div class="error-message">Password must be at least 8 characters</div>
-            </div>
             
             <!-- Multiline Text Input -->
             <div class="custom-input-container">
@@ -229,7 +281,53 @@
                 // Focus handling
                 input.addEventListener('click', function() {
                     inputText.focus();
-                });
+                    // For demo purposes - add sample text buttons to show language detection
+            document.addEventListener('DOMContentLoaded', function() {
+                // Add demo buttons after the form
+                const demoButtonsContainer = document.createElement('div');
+                demoButtonsContainer.style.marginTop = '20px';
+                demoButtonsContainer.style.display = 'flex';
+                demoButtonsContainer.style.gap = '10px';
+                demoButtonsContainer.style.justifyContent = 'center';
+                
+                // English sample text
+                const englishButton = document.createElement('button');
+                englishButton.textContent = 'Add English Text';
+                englishButton.className = 'button';
+                englishButton.onclick = function() {
+                    const textInput = document.querySelector('[data-type="multiline"]');
+                    textInput.textContent = "This is a sample English text to demonstrate automatic font switching. The system will detect Latin characters and apply the appropriate font style.";
+                    textInput.dispatchEvent(new Event('input'));
+                };
+                
+                // Persian sample text
+                const persianButton = document.createElement('button');
+                persianButton.textContent = 'Add Persian Text';
+                persianButton.className = 'button';
+                persianButton.onclick = function() {
+                    const textInput = document.querySelector('[data-type="multiline"]');
+                    textInput.textContent = "این یک متن نمونه فارسی است برای نمایش تشخیص خودکار زبان و تغییر فونت. سیستم کاراکترهای فارسی را تشخیص داده و فونت مناسب را اعمال می کند.";
+                    textInput.dispatchEvent(new Event('input'));
+                };
+                
+                // Mixed text sample
+                const mixedButton = document.createElement('button');
+                mixedButton.textContent = 'Add Mixed Text';
+                mixedButton.className = 'button';
+                mixedButton.onclick = function() {
+                    const textInput = document.querySelector('[data-type="multiline"]');
+                    textInput.textContent = "این یک متن ترکیبی با English words است که هم شامل کلمات فارسی و هم انگلیسی می‌باشد. The system will detect the predominant script and set direction accordingly.";
+                    textInput.dispatchEvent(new Event('input'));
+                };
+                
+                demoButtonsContainer.appendChild(englishButton);
+                demoButtonsContainer.appendChild(persianButton);
+                demoButtonsContainer.appendChild(mixedButton);
+                
+                // Insert the buttons after the demo container
+                const demoContainer = document.querySelector('.demo-container');
+                demoContainer.after(demoButtonsContainer);
+            });
 
                 inputText.addEventListener('focus', function() {
                     input.classList.add('focused');
@@ -247,16 +345,14 @@
                     } else {
                         input.classList.remove('has-content');
                     }
-
-                    // Handle password masking
-                    if (this.dataset.type === 'password') {
-                        maskPassword(this);
-                    }
                     
                     // Handle auto-resizing for multiline inputs
                     if (this.closest('.custom-input').classList.contains('multiline')) {
                         autoResizeInput(this);
                     }
+                    
+                    // Detect language and apply appropriate font
+                    detectLanguageAndApplyFont(this);
                 });
 
                 // Special keys handling
@@ -266,8 +362,8 @@
                         // Default tab behavior will work
                     }
                     
-                    // Enter key for submit
-                    if (e.key === 'Enter') {
+                    // Enter key for submit on single line inputs
+                    if (e.key === 'Enter' && !this.closest('.custom-input').classList.contains('multiline')) {
                         e.preventDefault();
                         validateInput(this);
                         if (this.closest('.custom-input-container').nextElementSibling) {
@@ -276,67 +372,169 @@
                         }
                     }
 
-                    // Prevent line breaks
-                    if (e.key === 'Enter') {
+                    // Allow line breaks only in multiline inputs
+                    if (e.key === 'Enter' && !this.closest('.custom-input').classList.contains('multiline')) {
                         e.preventDefault();
                     }
                 });
 
-                // Paste handling - strip formatting
+                // Paste handling - strip formatting and process text
                 inputText.addEventListener('paste', function(e) {
                     e.preventDefault();
                     const text = e.clipboardData.getData('text/plain');
-                    document.execCommand('insertText', false, text);
+                    
+                    // Insert the plain text at cursor position
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        
+                        // We need to insert the text without formatting first
+                        const textNode = document.createTextNode(text);
+                        range.insertNode(textNode);
+                        
+                        // Move cursor to the end of inserted text
+                        range.setStartAfter(textNode);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        
+                        // Now process the entire text with language detection
+                        detectLanguageAndApplyFont(this);
+                        
+                        // Trigger input event to handle other logic
+                        this.dispatchEvent(new Event('input'));
+                    }
                 });
             });
 
-            // Password handling
-            const passwordFields = document.querySelectorAll('[data-type="password"]');
-            passwordFields.forEach(field => {
-                field.dataset.actualValue = '';
+            // Language detection and font application
+            function detectLanguageAndApplyFont(element) {
+                const text = element.textContent;
                 
-                field.addEventListener('input', function(e) {
-                    const selectionStart = window.getSelection().anchorOffset;
+                // If empty, reset styles
+                if (!text.trim()) {
+                    element.innerHTML = '';
+                    element.className = 'input-text';
+                    element.style.direction = 'ltr';
+                    return;
+                }
+                
+                // Check for Persian/Arabic characters
+                const persianArabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+                
+                // Check for English/Latin characters
+                const latinRegex = /[A-Za-z]/;
+                
+                // Process text character by character
+                let processedHTML = '';
+                for (let i = 0; i < text.length; i++) {
+                    const char = text[i];
                     
-                    // Get actual value from what was typed
-                    let actualValue = this.dataset.actualValue || '';
-                    const visibleValue = this.textContent;
-                    
-                    // If content is longer, characters were added
-                    if (visibleValue.length > actualValue.length) {
-                        const newChars = visibleValue.length - actualValue.length;
-                        const addedContent = visibleValue.slice(selectionStart - newChars, selectionStart);
-                        actualValue = actualValue.slice(0, selectionStart - newChars) + addedContent + actualValue.slice(selectionStart - newChars);
-                    } 
-                    // If content is shorter, characters were deleted
-                    else if (visibleValue.length < actualValue.length) {
-                        const deletedChars = actualValue.length - visibleValue.length;
-                        actualValue = actualValue.slice(0, selectionStart) + actualValue.slice(selectionStart + deletedChars);
-                    }
-                    
-                    this.dataset.actualValue = actualValue;
-                    maskPassword(this);
-                });
-
-                // Handle keydown for special cases like backspace and delete
-                field.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' || e.key === 'Delete') {
-                        const selection = window.getSelection();
-                        const selectionStart = selection.anchorOffset;
-                        const selectionEnd = selection.focusOffset;
-                        
-                        // If there's a selection range
-                        if (selectionStart !== selectionEnd) {
-                            const actualValue = this.dataset.actualValue;
-                            this.dataset.actualValue = actualValue.slice(0, selectionStart) + actualValue.slice(selectionEnd);
-                            setTimeout(() => maskPassword(this), 0);
+                    if (persianArabicRegex.test(char)) {
+                        // Persian/Arabic character
+                        processedHTML += `<span class="fa">${char}</span>`;
+                    } else if (latinRegex.test(char)) {
+                        // Latin character
+                        processedHTML += `<span class="en">${char}</span>`;
+                    } else {
+                        // Other characters (numbers, symbols, etc.)
+                        // We'll use the previous character's direction if available
+                        if (i > 0) {
+                            const prevChar = text[i-1];
+                            if (persianArabicRegex.test(prevChar)) {
+                                processedHTML += `<span class="fa">${char}</span>`;
+                            } else {
+                                processedHTML += `<span class="en">${char}</span>`;
+                            }
+                        } else {
+                            // Default for first character if it's not alpha
+                            processedHTML += `<span class="en">${char}</span>`;
                         }
                     }
-                });
-            });
+                }
+                
+                // Determine predominant direction for overall text alignment
+                const persianArabicCount = (text.match(persianArabicRegex) || []).length;
+                const latinCount = (text.match(latinRegex) || []).length;
+                element.style.direction = persianArabicCount > latinCount ? 'rtl' : 'ltr';
+                
+                // Preserve the input-text class
+                element.className = 'input-text';
+                
+                // Set the processed HTML
+                const selection = window.getSelection();
+                const caretPosition = getCaretPosition(element);
+                
+                // Save any selection
+                const isSelectionInElement = selection.rangeCount > 0 && 
+                                            element.contains(selection.anchorNode);
+                
+                // Update HTML content
+                element.innerHTML = processedHTML;
+                
+                // Restore caret position
+                if (isSelectionInElement) {
+                    restoreCaretPosition(element, caretPosition);
+                }
+            }
+            
+            // Helper function to get caret position
+            function getCaretPosition(element) {
+                const selection = window.getSelection();
+                if (selection.rangeCount === 0) return 0;
+                
+                const range = selection.getRangeAt(0);
+                const preCaretRange = range.cloneRange();
+                preCaretRange.selectNodeContents(element);
+                preCaretRange.setEnd(range.endContainer, range.endOffset);
+                return preCaretRange.toString().length;
+            }
+            
+            // Helper function to restore caret position
+            function restoreCaretPosition(element, position) {
+                // Traverse the element's text nodes to find the right position
+                const textNodes = [];
+                const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                
+                while (node = walk.nextNode()) {
+                    textNodes.push(node);
+                }
+                
+                let charCount = 0;
+                let nodeIndex = 0;
+                let foundNode = null;
+                let foundOffset = 0;
+                
+                for (let i = 0; i < textNodes.length; i++) {
+                    const node = textNodes[i];
+                    const nodeLength = node.length;
+                    
+                    if (charCount + nodeLength >= position) {
+                        foundNode = node;
+                        foundOffset = position - charCount;
+                        break;
+                    }
+                    
+                    charCount += nodeLength;
+                }
+                
+                if (foundNode) {
+                    const range = document.createRange();
+                    range.setStart(foundNode, foundOffset);
+                    range.collapse(true);
+                    
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
 
             // Validation function
             function validateInput(inputElement) {
+                if (!inputElement) return;
+                
                 const inputContainer = inputElement.closest('.custom-input');
                 
                 if (inputElement.dataset.type === 'email') {
@@ -350,36 +548,12 @@
                     }
                 }
                 
-                if (inputElement.dataset.type === 'password') {
-                    const passwordValue = inputElement.dataset.actualValue;
-                    if (passwordValue && passwordValue.length < 8) {
+                if (inputElement.dataset.type === 'multiline') {
+                    const textValue = inputElement.textContent.trim();
+                    if (!textValue) {
                         inputContainer.classList.add('error');
                     } else {
                         inputContainer.classList.remove('error');
-                    }
-                }
-            }
-
-            // Password masking function
-            function maskPassword(element) {
-                const actualValue = element.dataset.actualValue;
-                const maskedValue = '•'.repeat(actualValue.length);
-                
-                // Store cursor position
-                const selection = window.getSelection();
-                const selectionStart = selection.anchorOffset;
-                
-                element.textContent = maskedValue;
-                
-                // Restore cursor position
-                if (selectionStart !== undefined) {
-                    const range = document.createRange();
-                    selection.removeAllRanges();
-                    
-                    if (element.childNodes.length > 0) {
-                        range.setStart(element.childNodes[0], Math.min(selectionStart, maskedValue.length));
-                        range.collapse(true);
-                        selection.addRange(range);
                     }
                 }
             }
@@ -406,34 +580,29 @@
             // Submit button functionality
             document.getElementById('submit-btn').addEventListener('click', function() {
                 const emailInput = document.querySelector('[data-type="email"]');
-                const passwordInput = document.querySelector('[data-type="password"]');
                 const descriptionInput = document.querySelector('[data-type="multiline"]');
                 
                 validateInput(emailInput);
-                validateInput(passwordInput);
                 validateInput(descriptionInput);
                 
                 const emailContainer = emailInput.closest('.custom-input');
-                const passwordContainer = passwordInput.closest('.custom-input');
                 const descriptionContainer = descriptionInput.closest('.custom-input');
                 
                 if (!emailContainer.classList.contains('error') && 
-                    !passwordContainer.classList.contains('error') && 
                     !descriptionContainer.classList.contains('error')) {
                     
                     const formData = {
                         email: emailInput.textContent.trim(),
-                        password: passwordInput.dataset.actualValue,
                         description: descriptionInput.textContent.trim()
                     };
                     
                     console.log('Form submitted:', formData);
                     alert('Form submitted successfully!\n\nEmail: ' + formData.email + 
-                          '\nPassword: ' + '*'.repeat(formData.password.length) +
                           '\nDescription: ' + formData.description);
                 }
             });
         });
-    </script>
+     })
+        </script>
 </body>
 </html>
