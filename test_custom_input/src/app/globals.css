@@ -1,29 +1,12 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Font face declarations for Farsi fonts */
 @font-face {
   font-family: 'Estedad';
   src: url('/fonts/fa/Estedad-FD-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -31,6 +14,7 @@
   src: url('/fonts/fa/Estedad-FD-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -38,13 +22,16 @@
   src: url('/fonts/fa/Estedad-FD-SemiBold.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
+  font-display: swap;
 }
 
+/* Font face declarations for English fonts */
 @font-face {
   font-family: 'Manrope';
   src: url('/fonts/en/Manrope-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -52,6 +39,7 @@
   src: url('/fonts/en/Manrope-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -59,10 +47,40 @@
   src: url('/fonts/en/Manrope-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
+  font-display: swap;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.font-en {
+  font-family: 'Manrope';
+  letter-spacing: -0.5px;
+}
+
+.font-fa {
+  font-family: 'Estedad';
+  direction: rtl;
+  letter-spacing: -1px;
+}
+
+@layer base {
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    @apply bg-gray-100 m-0 p-5;
+  }
+}
+
+@layer components {
+  .font-estedad {
+    font-family: 'Estedad';
+    letter-spacing: -1px;
+  }
+  
+  .font-manrope {
+    font-family: 'Manrope';
+    letter-spacing: -1px;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
