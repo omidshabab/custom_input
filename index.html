@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Text Input</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .custom-input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .custom-input {
+            width: 100%;
+            min-height: 48px;
+            background-color: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 16px;
+            line-height: 24px;
+            box-sizing: border-box;
+            cursor: text;
+            transition: border-color 0.2s, box-shadow 0.2s, min-height 0.2s;
+            outline: none;
+            color: #333;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .custom-input:focus, 
+        .custom-input.focused {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .input-label {
+            position: absolute;
+            left: 16px;
+            top: 14px;
+            color: #6b7280;
+            font-size: 16px;
+            transition: all 0.2s;
+            pointer-events: none;
+        }
+
+        .custom-input.has-content + .input-label,
+        .custom-input.focused + .input-label {
+            transform: translateY(-24px) scale(0.85);
+            color: #2563eb;
+            background-color: #fff;
+            padding: 0 4px;
+            left: 12px;
+        }
+
+        .input-text {
+            outline: none;
+            min-width: 1px;
+            min-height: 24px;
+            width: 100%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+        
+        .multiline .input-text {
+            height: auto;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 24px;
+            background-color: #2563eb;
+            margin-left: 1px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .custom-input.error {
+            border-color: #dc2626;
+        }
+
+        .custom-input.error + .input-label {
+            color: #dc2626;
+        }
+
+        .custom-input.error ~ .error-message {
+            display: block;
+        }
+
+        /* Disabled state */
+        .custom-input.disabled {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .custom-input.disabled + .input-label {
+            color: #9ca3af;
+        }
+
+        /* Example demo form */
+        .demo-container {
+            margin-top: 40px;
+            padding: 24px;
+            border-radius: 12px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: #1f2937;
+        }
+
+        .button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="demo-container">
+            <h2>Custom Text Input Demo</h2>
+            
+            <!-- Email Input -->
+            <div class="custom-input-container">
+                <div class="custom-input" id="email-input" tabindex="0">
+                    <div class="input-text" contenteditable="true" data-placeholder="Email" data-type="email"></div>
+                </div>
+                <label class="input-label">Email</label>
+                <div class="error-message">Please enter a valid email address</div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="custom-input-container">
+                <div class="custom-input" id="password-input" tabindex="0">
+                    <div class="input-text" contenteditable="true" data-placeholder="Password" data-type="password"></div>
+                </div>
+                <label class="input-label">Password</label>
+                <div class="error-message">Password must be at least 8 characters</div>
+            </div>
+            
+            <!-- Multiline Text Input -->
+            <div class="custom-input-container">
+                <div class="custom-input multiline" id="description-input" tabindex="0">
+                    <div class="input-text" contenteditable="true" data-placeholder="Description" data-type="multiline"></div>
+                </div>
+                <label class="input-label">Description</label>
+                <div class="error-message">Please provide a description</div>
+            </div>
+
+            <!-- Disabled Input -->
+            <div class="custom-input-container">
+                <div class="custom-input disabled" id="disabled-input" tabindex="-1">
+                    <div class="input-text" contenteditable="false" data-placeholder="Disabled"></div>
+                </div>
+                <label class="input-label">Disabled Input</label>
+            </div>
+
+            <button class="button" id="submit-btn">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all custom inputs
+            const customInputs = document.querySelectorAll('.custom-input');
+            customInputs.forEach(input => {
+                if (input.classList.contains('disabled')) {
+                    return;
+                }
+                
+                // For multiline inputs, initialize height
+                if (input.classList.contains('multiline')) {
+                    const inputText = input.querySelector('.input-text');
+                    // Set initial height
+                    input.style.height = '48px';
+                }
+
+                const inputText = input.querySelector('.input-text');
+                
+                // Focus handling
+                input.addEventListener('click', function() {
+                    inputText.focus();
+                });
+
+                inputText.addEventListener('focus', function() {
+                    input.classList.add('focused');
+                });
+
+                inputText.addEventListener('blur', function() {
+                    input.classList.remove('focused');
+                    validateInput(inputText);
+                });
+
+                // Content change handling
+                inputText.addEventListener('input', function() {
+                    if (this.textContent.trim() !== '') {
+                        input.classList.add('has-content');
+                    } else {
+                        input.classList.remove('has-content');
+                    }
+
+                    // Handle password masking
+                    if (this.dataset.type === 'password') {
+                        maskPassword(this);
+                    }
+                    
+                    // Handle auto-resizing for multiline inputs
+                    if (this.closest('.custom-input').classList.contains('multiline')) {
+                        autoResizeInput(this);
+                    }
+                });
+
+                // Special keys handling
+                inputText.addEventListener('keydown', function(e) {
+                    // Tab handling
+                    if (e.key === 'Tab') {
+                        // Default tab behavior will work
+                    }
+                    
+                    // Enter key for submit
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        validateInput(this);
+                        if (this.closest('.custom-input-container').nextElementSibling) {
+                            const nextInput = this.closest('.custom-input-container').nextElementSibling.querySelector('.input-text');
+                            if (nextInput) nextInput.focus();
+                        }
+                    }
+
+                    // Prevent line breaks
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                    }
+                });
+
+                // Paste handling - strip formatting
+                inputText.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const text = e.clipboardData.getData('text/plain');
+                    document.execCommand('insertText', false, text);
+                });
+            });
+
+            // Password handling
+            const passwordFields = document.querySelectorAll('[data-type="password"]');
+            passwordFields.forEach(field => {
+                field.dataset.actualValue = '';
+                
+                field.addEventListener('input', function(e) {
+                    const selectionStart = window.getSelection().anchorOffset;
+                    
+                    // Get actual value from what was typed
+                    let actualValue = this.dataset.actualValue || '';
+                    const visibleValue = this.textContent;
+                    
+                    // If content is longer, characters were added
+                    if (visibleValue.length > actualValue.length) {
+                        const newChars = visibleValue.length - actualValue.length;
+                        const addedContent = visibleValue.slice(selectionStart - newChars, selectionStart);
+                        actualValue = actualValue.slice(0, selectionStart - newChars) + addedContent + actualValue.slice(selectionStart - newChars);
+                    } 
+                    // If content is shorter, characters were deleted
+                    else if (visibleValue.length < actualValue.length) {
+                        const deletedChars = actualValue.length - visibleValue.length;
+                        actualValue = actualValue.slice(0, selectionStart) + actualValue.slice(selectionStart + deletedChars);
+                    }
+                    
+                    this.dataset.actualValue = actualValue;
+                    maskPassword(this);
+                });
+
+                // Handle keydown for special cases like backspace and delete
+                field.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' || e.key === 'Delete') {
+                        const selection = window.getSelection();
+                        const selectionStart = selection.anchorOffset;
+                        const selectionEnd = selection.focusOffset;
+                        
+                        // If there's a selection range
+                        if (selectionStart !== selectionEnd) {
+                            const actualValue = this.dataset.actualValue;
+                            this.dataset.actualValue = actualValue.slice(0, selectionStart) + actualValue.slice(selectionEnd);
+                            setTimeout(() => maskPassword(this), 0);
+                        }
+                    }
+                });
+            });
+
+            // Validation function
+            function validateInput(inputElement) {
+                const inputContainer = inputElement.closest('.custom-input');
+                
+                if (inputElement.dataset.type === 'email') {
+                    const emailValue = inputElement.textContent.trim();
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    
+                    if (emailValue && !emailRegex.test(emailValue)) {
+                        inputContainer.classList.add('error');
+                    } else {
+                        inputContainer.classList.remove('error');
+                    }
+                }
+                
+                if (inputElement.dataset.type === 'password') {
+                    const passwordValue = inputElement.dataset.actualValue;
+                    if (passwordValue && passwordValue.length < 8) {
+                        inputContainer.classList.add('error');
+                    } else {
+                        inputContainer.classList.remove('error');
+                    }
+                }
+            }
+
+            // Password masking function
+            function maskPassword(element) {
+                const actualValue = element.dataset.actualValue;
+                const maskedValue = '•'.repeat(actualValue.length);
+                
+                // Store cursor position
+                const selection = window.getSelection();
+                const selectionStart = selection.anchorOffset;
+                
+                element.textContent = maskedValue;
+                
+                // Restore cursor position
+                if (selectionStart !== undefined) {
+                    const range = document.createRange();
+                    selection.removeAllRanges();
+                    
+                    if (element.childNodes.length > 0) {
+                        range.setStart(element.childNodes[0], Math.min(selectionStart, maskedValue.length));
+                        range.collapse(true);
+                        selection.addRange(range);
+                    }
+                }
+            }
+
+            // Auto-resize function for multiline inputs
+            function autoResizeInput(inputElement) {
+                const container = inputElement.closest('.custom-input');
+                
+                // Check if content exceeds one line
+                const lineHeight = parseInt(window.getComputedStyle(inputElement).lineHeight);
+                const padding = parseInt(window.getComputedStyle(container).paddingTop) + 
+                               parseInt(window.getComputedStyle(container).paddingBottom);
+                
+                // Calculate required height based on scrollHeight
+                const requiredHeight = Math.max(
+                    48, // minimum height (same as initial min-height)
+                    inputElement.scrollHeight + padding
+                );
+                
+                // Update container height
+                container.style.height = requiredHeight + 'px';
+            }
+            
+            // Submit button functionality
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                const emailInput = document.querySelector('[data-type="email"]');
+                const passwordInput = document.querySelector('[data-type="password"]');
+                const descriptionInput = document.querySelector('[data-type="multiline"]');
+                
+                validateInput(emailInput);
+                validateInput(passwordInput);
+                validateInput(descriptionInput);
+                
+                const emailContainer = emailInput.closest('.custom-input');
+                const passwordContainer = passwordInput.closest('.custom-input');
+                const descriptionContainer = descriptionInput.closest('.custom-input');
+                
+                if (!emailContainer.classList.contains('error') && 
+                    !passwordContainer.classList.contains('error') && 
+                    !descriptionContainer.classList.contains('error')) {
+                    
+                    const formData = {
+                        email: emailInput.textContent.trim(),
+                        password: passwordInput.dataset.actualValue,
+                        description: descriptionInput.textContent.trim()
+                    };
+                    
+                    console.log('Form submitted:', formData);
+                    alert('Form submitted successfully!\n\nEmail: ' + formData.email + 
+                          '\nPassword: ' + '*'.repeat(formData.password.length) +
+                          '\nDescription: ' + formData.description);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
